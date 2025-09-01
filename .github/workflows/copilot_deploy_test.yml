@@ -1,0 +1,39 @@
+name: Deploy Nuxt Copilot Metrics Viewer to Azure Web Apps
+
+on:
+  push:
+    branches:
+      - main   # or your deployment branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Nuxt app
+        run: npm run build
+
+      # Zip entire .output folder (static + server/api)
+      - name: Zip .output folder
+        run: |
+          cd .output
+          zip -r ../nuxt-output.zip .
+
+      - name: Deploy to Azure Web Apps
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: nuxt-copilot-viewer   # 👈 replace with your Azure Web App name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./nuxt-output.zip

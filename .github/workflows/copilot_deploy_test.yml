@@ -27,9 +27,7 @@ jobs:
 
       # Zip entire .output folder (static + server/api)
       - name: Zip .output folder
-        run: |
-          cd .output
-          zip -r ../nuxt-output.zip .
+        run: zip -r nuxt-output.zip .output
 
       - name: Deploy to Azure Web Apps
         uses: azure/webapps-deploy@v3
